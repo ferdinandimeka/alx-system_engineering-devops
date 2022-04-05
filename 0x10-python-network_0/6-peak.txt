@@ -1,2 +1,0 @@
-# Time complexity
-0(1)
