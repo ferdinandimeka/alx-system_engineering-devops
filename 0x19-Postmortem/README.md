@@ -2,7 +2,7 @@ Postmortem
 
 Issue Summary
 
-For a total of 16 minutes on April 13, 2022 at 12:00 p.m. EAT, 100 percent of the web server was offline. At 12:16 p.m. EAT, service was restored. Two servers make up the website infrastructure. A loadbalancer controls the usage of these servers; one server was down, therefore the responsibility of service fell on the second. The main problem was a syntax issue in the nginx operating on one server's /etc/nginx/sites-available/default file. The syntax problem was a missing semicolon in the inserted line, which caused nginx to fail to start.
+For a total of 16 minutes on April 13, 2022 at 12:00 p.m. EAT, 100 percent of the web server was offline. At 12:16 p.m. EAT, service was restored. Two servers make up the website infrastructure. A load balancer controls the usage of these servers; one server was down, therefore the responsibility of service fell on the second. The main problem was a syntax issue in the nginx operating on one server's /etc/nginx/sites-available/default file. The syntax problem was a missing semicolon in the inserted line, which caused nginx to fail to start.
 
 Timeline
 12:00pm EAT: Issue was detected. 12:06pm EAT: While using curl to check the response headers, the custom header indicating the name of the server that sent the response showed that only one server was responding to the requests 12:09pm EAT: Issue was handled by Habtamwa, the server administrator who logged into the server that was not responding. 12:10pm EAT: She ran the command sudo service nginx status to bring up a log of the current status of nginx. 12:12pm EAT: It was discovered that nginx was not running and the cause of failure was outlined in the following snippet:
