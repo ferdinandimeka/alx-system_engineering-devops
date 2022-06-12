@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# The content of the current directory-In a list format
-for i in *;
+# prints best school 10 times
+for i in *
 do
-    echo "$i" | cut -d'-' -f2
+	echo "$i" | cut -d '-' -f 2
 done
