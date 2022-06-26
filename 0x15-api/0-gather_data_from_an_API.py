@@ -1,29 +1,44 @@
 #!/usr/bin/python3
-"""
-using the https://jsonplaceholder.typicode.com/ API with the requests module
-"""
-
-
-import requests
+"""Gather data from API"""
+from requests import get
 from sys import argv
 
-
 if __name__ == "__main__":
+    try:
+        id = argv[1]
+        is_integer = int(id)
+    except Exception:
+        exit()
 
-    todos = requests.get("https://jsonplaceholder.typicode.com/todos?userId={}".format(argv[1]))  # noqa
-    user = requests.get("https://jsonplaceholder.typicode.com/users/{}".format(argv[1]))  # noqa
-    todos = todos.json()
-    user = user.json()
-    totalTasks = 0
-    completed = 0
-    completedList = []
+    url = "https://jsonplaceholder.typicode.com/"
+    url_user = url + "users?id=" + id
+    url_todos = url + "todos?userId=" + id
 
-    for item in todos:
-        totalTasks += 1
-        if item.get('completed') is True:
-            completed += 1
-            completedList.append(item.get('title'))
-    print("Employee {} is done with tasks({}/{}):".format(user.get('name'), completed  totalTasks))  # noqa
+    request_user = get(url_user)
+    request_todos = get(url_todos)
+    # Connection and have an access to the json
+    try:
+        jsuser = request_user.json()
+        jstodos = request_todos.json()
+    except ValueError:
+        print("No Json")
 
-    for line in completedList:
-        print("\t {}".format(line, end=""))
+    # Assing values
+    if jsuser and jstodos:
+        EMPLOYEE_NAME = jsuser[0].get("name")
+        NUMBER_OF_DONE_TASKS = 0
+        for task in jstodos:
+            if task.get("completed"):
+                NUMBER_OF_DONE_TASKS += 1
+            TOTAL_NUMBER_OF_TASKS = len(jstodos)
+
+        # Print first line
+        print("Employee {} is done with tasks({}/{}):"
+              .format(EMPLOYEE_NAME,
+                      NUMBER_OF_DONE_TASKS,
+                      TOTAL_NUMBER_OF_TASKS))
+        # Second and N lines
+        for doing in jstodos:
+            TASK_TITLE = doing.get("title")
+            if doing.get("completed") is True:
+                print("\t {}".format(TASK_TITLE))
