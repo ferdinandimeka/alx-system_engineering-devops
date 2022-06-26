@@ -26,4 +26,4 @@ if __name__ == "__main__":
     print("Employee {} is done with tasks({}/{}):".format(user.get('name'), completed, totalTasks))
 
     for line in completedList:
-        print("\t {}".format(line))
+        print("\t {}".format(line, end=""))
