@@ -53,8 +53,8 @@ frontend www-https
 
 backend www-backend
    redirect scheme https if !{ ssl_fc }
-   server 2377-web-01 34.138.159.61:80 check
-   server 2377-web-02 44.200.175.133:80 check
+   server 2377-web-01 18.205.60.58:80 check
+   server 2377-web-02 3.237.43.188:80 check
 
 backend letsencrypt-backend
    server letsencrypt 127.0.0.1:54321
@@ -66,5 +66,5 @@ backend letsencrypt-backend
 
 #backend backendnodes
 #	balance roundrobin
-#	server 2377-web-01 34.138.95.175:80 check
-#	server 2377-web-02 104.196.118.242:80 check
+#	server 2377-web-01 18.205.60.58:80 check
+#	server 2377-web-02 3.237.43.188:80 check
