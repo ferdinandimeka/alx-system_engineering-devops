@@ -1,30 +1,51 @@
 #!/usr/bin/python3
-"""For a given employee ID, returns information about
-their TODO list progress"""
+"""script to have employee information and work status list"""
 
+import json
 import requests
 import sys
 
 if __name__ == "__main__":
 
-    userId = sys.argv[1]
-    user = requests.get("https://jsonplaceholder.typicode.com/users/{}"
-                        .format(userId))
+    if sys.argv[1].isdigit():
+        # check user id is a number
+        user_id = sys.argv[1]
 
-    name = user.json().get('name')
+        # Url's to get data
+        todos_url = "https://jsonplaceholder.typicode.com/todos/"
+        employee_url = "https://jsonplaceholder.typicode.com/users/" + user_id
 
-    todos = requests.get('https://jsonplaceholder.typicode.com/todos')
-    totalTasks = 0
-    completed = 0
+        # Request
+        employee_todos = requests.get(todos_url)
+        employee_data = requests.get(employee_url)
 
-    for task in todos.json():
-        if task.get('userId') == int(userId):
-            totalTasks += 1
-            if task.get('completed'):
-                completed += 1
+        # Get requests
+        json_employee = employee_data.json()
+        json_todos = employee_todos.json()
 
-    print('Employee {} is done with tasks({}/{}):'
-          .format(name, completed, totalTasks))
+        # converting into DICTIONARY JSON
+        json_employee = employee_data.json()
+        json_todos = employee_todos.json()
 
-    print('\n'.join(["\t " + task.get('title') for task in todos.json()
-          if task.get('userId') == int(userId) and task.get('completed')]))
+        # Extracting info from api's all the data of employee
+        total_todos = 0
+        done_todos = 0
+        done_tasks = []
+        for each_dict in json_todos:
+            if each_dict['userId'] == int(user_id):
+                if each_dict['completed']:
+                    done_tasks.append(each_dict['title'])
+                    done_todos += 1
+                total_todos += 1
+        # Ouputting the data
+        text = 'Employee {} is done with tasks({}/{}):\
+    '.format(json_employee['name'], done_todos, total_todos)
+        print(text)
+        for task in done_tasks:
+            print('\t {}'.format(task))
+
+        # Using params I can filter 🎯
+        # emplo = requests.get('https://jsonplaceholder.typicode.com/users',
+        #                         params={'id':  user_id})
+        # tasks = requests.get('https://jsonplaceholder.typicode.com/todos',
+        #                      params={'userId':  user_id})
