@@ -1,32 +1,40 @@
 #!/usr/bin/python3
-"""script to have employee information and work status list"""
-
-import requests
+"""Gather data from API"""
+from requests import get
 from sys import argv
-
-
-def todo(userid):
-    """doc stringed"""
-    name = requests.get(
-        'https://jsonplaceholder.typicode.com/users/{}'.format(
-            userid)).json().get('name')
-    tasks = requests.get(
-        'https://jsonplaceholder.typicode.com/users/{}/todos'.format(
-            userid)).json()
-    tasksDone = ['\t {}\n'.format(dic.get('title')) for dic in tasks
-                 if dic.get('completed')]
-    if name and tasks:
-        print("Employee {} is done with tasks({}/{}):".format
-              (name, len(tasksDone), len(tasks)))
-        print(''.join(tasksDone), end='')
-
-
 if __name__ == "__main__":
-    if len(argv) == 2:
-        todo(int(argv[1]))
+    try:
+        id = argv[1]
+        is_integer = int(id)
+    except Exception:
+        exit()
+    url = "https://jsonplaceholder.typicode.com/"
+    url_user = url + "users?id=" + id
+    url_todos = url + "todos?userId=" + id
+    request_user = get(url_user)
+    request_todos = get(url_todos)
+    # Connection and have an access to the json
+    try:
+        jsuser = request_user.json()
+        jstodos = request_todos.json()
+    except ValueError:
+        print("No Json")
+    # Assing values
+    if jsuser and jstodos:
+        EMPLOYEE_NAME = jsuser[0].get("name")
+        NUMBER_OF_DONE_TASKS = 0
+        for task in jstodos:
+            if task.get("completed"):
+                NUMBER_OF_DONE_TASKS += 1
+            TOTAL_NUMBER_OF_TASKS = len(jstodos)
 
-        # Using params I can filter 🎯
-        # emplo = requests.get('https://jsonplaceholder.typicode.com/users',
-        #                         params={'id':  user_id})
-        # tasks = requests.get('https://jsonplaceholder.typicode.com/todos',
-        #                      params={'userId':  user_id})
+        # Print first line
+        print("Employee {} is done with tasks({}/{}):"
+              .format(EMPLOYEE_NAME,
+                      NUMBER_OF_DONE_TASKS,
+                      TOTAL_NUMBER_OF_TASKS))
+        # Second and N lines
+        for doing in jstodos:
+            TASK_TITLE = doing.get("title")
+            if doing.get("completed") is True:
+                print("\t {}".format(TASK_TITLE))
