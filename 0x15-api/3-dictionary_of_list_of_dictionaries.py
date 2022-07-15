@@ -1,49 +1,25 @@
 #!/usr/bin/python3
-"""Gather data from API"""
+"""Python script to export data in the JSON format"""
 
-from requests import get
-from sys import argv, exit
 import json
+import requests
 
 if __name__ == "__main__":
 
-    url = "https://jsonplaceholder.typicode.com/"
-    url_user = url + "users"
-    url_todo = url + "todos"
+    emplotee_data = requests.get('https://jsonplaceholder.typicode.com/users')
+    task_data = requests.get('https://jsonplaceholder.typicode.com/todos')
 
-    request_user = get(url_user)
-    request_todo = get(url_todo)
-    # Connection and have an access to the json
-    try:
-        jsuser = request_user.json()
-        jstodo = request_todo.json()
-    except ValueError:
-        print("No Json")
-
-    # Assign values
-    if jsuser and jstodo:
-        jsresult = {}
-        user_names = {}
-        for user in jsuser:
-            USER_ID = user.get('id')
-            USERNAME = user.get('username')
-            jsresult[USER_ID] = []
-            user_names[USER_ID] = USERNAME
-
-        # create the value of the dict of the final json file
-        # jslist = jsresult[USER_ID]
-        for task in jstodo:
-            TASK_TITLE = task.get('title')
-            TASK_COMPLETED_STATUS = task.get('completed')
-            # write the internal dict
-            user_id = task.get("userId")
-            taskdict = {"task": TASK_TITLE,
-                        "completed": TASK_COMPLETED_STATUS,
-                        "username": user_names.get(user_id)}
-
-            if jsresult.get(user_id) is not None:
-                jsresult.get(user_id).append(taskdict)
-
-        # generate the jsonfile
-        with open('todo_all_employees.json', 'w', newline='') as jsonfile:
-            json.dump(jsresult, jsonfile)
+    data = {}
+    for user in emplotee_data.json():
+        task_list = []
+        for task in task_data.json():
+            new_task = {}
+            if task.get('userId') == user.get('id'):
+                new_task['task'] = task.get('title')
+                new_task['completed'] = task.get('completed')
+                new_task['username'] = user.get('username')
+                task_list.append(new_task)
+        data['{}'.format(user.get('id'))] = task_list
+    # Create file
+    with open('todo_all_employees.json', 'w') as json_file:
+        json.dump(data, json_file)
